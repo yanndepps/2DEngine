@@ -6,10 +6,10 @@
 -   create a simple 2D **game engine** from scratch
 -   fundamentals of game engine **architecture** and game **design patterns**
 -   use modern C++ with a set of small helper **libraries** :
-    -   SDL
-    -   glm
-    -   ImGui
-    -   Lua
+    -   SDL ( graphics, true-type fonts, sounds, etc. )
+    -   glm ( vectors, matrices, quaternions, etc. )
+    -   ImGui ( quick GUI for debugging )
+    -   Lua ( scripting )
 -   implement :
     -   a simple 2D **rendering** system
     -   a frame rate independent **game loop**
