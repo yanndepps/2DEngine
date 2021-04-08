@@ -72,6 +72,7 @@ void Game::Setup() {
 void Game::Update() {
   // if we are too fast, waste some time until we reach the
   // MILLSECS_PER_FRAME
+  // this can be bypassed to uncap the framerate
   int timeToWait =
       MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
   if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
