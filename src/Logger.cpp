@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+std::vector<LogEntry> Logger::messages;
+
 std::string CurrentDateTimeToString() {
   std::time_t now =
       std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -17,14 +19,20 @@ void Logger::Log(const std::string &message) {
   // Print on the console the message:
   // LOG: [ 12/Oct/2020 09:13:17 ] - Here goes the message ...
   // this should be displayed in green
-  std::string output = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
-  std::cout << "\x1B[32m]" << output << "\033[0m" << std::endl;
+  LogEntry logEntry;
+  logEntry.type = LOG_INFO;
+  logEntry.message = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
+  std::cout << "\x1B[32m" << logEntry.message << "\033[0m" << std::endl;
+  messages.push_back(logEntry);
 }
 
 void Logger::Err(const std::string &message) {
   // Print on the console the message:
   // ERR: [ 12/Oct/2020 09:13:17 ] - Here goes the message ...
   // this should be displayed in red
-  std::string output = "ERR: [" + CurrentDateTimeToString() + "]: " + message;
-  std::cerr << "\x1B[91m" << output << "\033[0m" << std::endl;
+  LogEntry logEntry;
+  logEntry.type = LOG_ERROR;
+  logEntry.message = "ERR: [" + CurrentDateTimeToString() + "]: " + message;
+  std::cerr << "\x1B[91m" << logEntry.message << "\033[0m" << std::endl;
+  messages.push_back(logEntry);
 }
