@@ -2,6 +2,8 @@
 #define ECS_H
 
 #include <bitset>
+#include <typeindex>
+#include <unordered_map>
 #include <vector>
 
 const unsigned int MAX_COMPONENTS = 32;
@@ -71,8 +73,74 @@ public:
   template <typename TComponent> void RequireComponent();
 };
 
+//////////////////////////////////////////////////////////////////
+// Pool
+//////////////////////////////////////////////////////////////////
+// A pool is just a vector ( contiguous data ) of objects of
+// type T.
+//////////////////////////////////////////////////////////////////
+class IPool {
+public:
+  virtual ~IPool() {}
+};
+
+template <typename T> class Pool : public IPool {
+private:
+  std::vector<T> data;
+
+public:
+  Pool(int size = 100) { data.resize(size); }
+  virtual ~Pool() = default;
+  bool isEmpty() const { return data.empty(); }
+  int GetSize() const { return data.size(); }
+  void Resize(int n) { data.resize(n); }
+  void Clear() { data.clear(); }
+  void Add(T object) { data.push_back(object); }
+  void Set(int index, T object) { data[index] = object; }
+  T &Get(int index) { return static_cast<T &>(data[index]); }
+  T &operator[](unsigned int index) { return data[index]; }
+};
+
+//////////////////////////////////////////////////////////////////
+// Registry
+//////////////////////////////////////////////////////////////////
+// The registry manages the creation and destruction of entities,
+// add systems and components.
+//////////////////////////////////////////////////////////////////
 class Registry {
-  // TODO: ...
+private:
+  int numEntities = 0;
+
+  // Vector of component pools; each pool contains all the data
+  // for a certain component type
+  // [ Vector index = component type id ]
+  // [ Pool index = entity id ]
+  std::vector<IPool *> componentPools;
+
+  // Vector of component signatures per entity, saying which
+  // component is turned "on" for a given entity.
+  // [ Vector index = entity ID ]
+  std::vector<Signature> entityComponentSignatures;
+
+  std::unordered_map<std::type_index, System *> systems;
+
+public:
+  Registry() = default;
+
+  // TODO:
+  //
+  // CreateEntity()
+  // KillEntity()
+  //
+  // AddComponent(Entity entity)
+  // RemoveComponent(Entity entity)
+  // HasComponent(Entity entity)
+  // GetComponent(Entity entity)
+  //
+  // AddSystem()
+  // RemoveSystem()
+  // HasSystem()
+  // GetSystem()
 };
 
 template <typename TComponent> void System::RequireComponent() {
