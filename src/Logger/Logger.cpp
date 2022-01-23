@@ -16,9 +16,6 @@ std::string CurrentDateTimeToString() {
 }
 
 void Logger::Log(const std::string &message) {
-  // Print on the console the message:
-  // LOG: [ 12/Oct/2020 09:13:17 ] - Here goes the message ...
-  // this should be displayed in green
   LogEntry logEntry;
   logEntry.type = LOG_INFO;
   logEntry.message = "LOG: [" + CurrentDateTimeToString() + "]: " + message;
@@ -27,12 +24,9 @@ void Logger::Log(const std::string &message) {
 }
 
 void Logger::Err(const std::string &message) {
-  // Print on the console the message:
-  // ERR: [ 12/Oct/2020 09:13:17 ] - Here goes the message ...
-  // this should be displayed in red
   LogEntry logEntry;
   logEntry.type = LOG_ERROR;
   logEntry.message = "ERR: [" + CurrentDateTimeToString() + "]: " + message;
-  std::cerr << "\x1B[91m" << logEntry.message << "\033[0m" << std::endl;
   messages.push_back(logEntry);
+  std::cerr << "\x1B[91m" << logEntry.message << "\033[0m" << std::endl;
 }
