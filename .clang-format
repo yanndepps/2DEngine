@@ -1,0 +1,6 @@
+BasedOnStyle: LLVM
+IndentWidth: 8
+UseTab: ForIndentation
+BreakBeforeBraces : Linux
+ColumnLimit: 0
+PointerAlignment: Left
