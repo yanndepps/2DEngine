@@ -2,6 +2,7 @@
 #define ECS_H
 
 #include <bitset>
+#include <set>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
@@ -134,23 +135,29 @@ class Registry
 
     std::unordered_map<std::type_index, System*> systems;
 
+    // Set of entities that are flagged to be added or removed
+    // in the next registry Update()
+    std::set<Entity> entitiesToBeAdded;
+    std::set<Entity> entitiesToBeKilled;
+
   public:
     Registry() = default;
 
+    void Update();
+
+    Entity CreateEntity();
+
+    // TODO: AddComponent<T>( ... );
+
+    void AddEntityToSystem(Entity entity);
+
     // TODO:
     //
-    // CreateEntity()
-    // KillEntity()
     //
     // AddComponent(Entity entity)
-    // RemoveComponent(Entity entity)
-    // HasComponent(Entity entity)
     // GetComponent(Entity entity)
     //
     // AddSystem()
-    // RemoveSystem()
-    // HasSystem()
-    // GetSystem()
 };
 
 template <typename TComponent>
