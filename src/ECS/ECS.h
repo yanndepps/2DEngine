@@ -133,6 +133,8 @@ class Registry
     // [ Vector index = entity ID ]
     std::vector<Signature> entityComponentSignatures;
 
+    // Map of active systems
+    // [ Map key = system type id ]
     std::unordered_map<std::type_index, System*> systems;
 
     // Set of entities that are flagged to be added or removed
@@ -143,21 +145,18 @@ class Registry
   public:
     Registry() = default;
 
+    // The registry Update() finally processes the entities that are waiting
+    // to be added/killed to the systems.
     void Update();
 
+    // Entity management
     Entity CreateEntity();
 
-    // TODO: AddComponent<T>( ... );
+    // Component management
+    template <typename TComponent, typename... TArgs>
+    void AddComponent(Entity entity, TArgs&&... args);
 
     void AddEntityToSystem(Entity entity);
-
-    // TODO:
-    //
-    //
-    // AddComponent(Entity entity)
-    // GetComponent(Entity entity)
-    //
-    // AddSystem()
 };
 
 template <typename TComponent>
@@ -165,6 +164,32 @@ void System::RequireComponent()
 {
     const auto componentId = Component<TComponent>::GetId();
     componentSignature.set(componentId);
+}
+
+template <typename TComponent, typename... TArgs>
+void Registry::AddComponent(Entity entity, TArgs&&... args)
+{
+    const auto componentId = Component<TComponent>::GetId();
+    const auto entityId = entity.GetId();
+
+    if (componentId >= componentPools.size()) {
+	componentPools.resize(componentId + 1, nullptr);
+    }
+
+    if (!componentPools[componentId]) {
+	Pool<TComponent>* newComponentPool = new Pool<TComponent>();
+    }
+
+    Pool<TComponent>* componentPool = componentPools[componentId];
+
+    if (entityId >= componentPool->GetSize()) {
+	componentPool->Resize(numEntities);
+    }
+
+    TComponent newComponent(std::forward<TArgs>(args)...);
+
+    componentPool->Set(entityId, newComponent);
+    entityComponentSignatures[entityId].set(componentId);
 }
 
 #endif
