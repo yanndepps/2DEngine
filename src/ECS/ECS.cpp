@@ -32,7 +32,7 @@ Entity Registry::CreateEntity()
 
 	// Make sure the entityComponentSignatures vector
 	// can accomodate the new entity
-	if (entityId >= entityComponentSignatures.size()) {
+	if (entityId >= static_cast<int>(entityComponentSignatures.size())) {
 		entityComponentSignatures.resize(entityId + 1);
 	}
 

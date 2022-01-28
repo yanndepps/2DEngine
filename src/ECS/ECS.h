@@ -30,6 +30,7 @@ struct IComponent {
 template <typename T>
 class Component : public IComponent
 {
+      public:
 	// returns the unique id of Component<T>
 	static int GetId()
 	{
@@ -222,16 +223,16 @@ void Registry::AddComponent(Entity entity, TArgs&&... args)
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 
-	if (componentId >= componentPools.size()) {
+	if (componentId >= static_cast<int>(componentPools.size())) {
 		componentPools.resize(componentId + 1, nullptr);
 	}
 
 	if (!componentPools[componentId]) {
 		std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
+		componentPools[componentId] = newComponentPool;
 	}
 
-    std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool
-        <TComponent>>(componentPools[componentId]);
+	std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
 
 	if (entityId >= componentPool->GetSize()) {
 		componentPool->Resize(numEntities);
@@ -241,6 +242,8 @@ void Registry::AddComponent(Entity entity, TArgs&&... args)
 
 	componentPool->Set(entityId, newComponent);
 	entityComponentSignatures[entityId].set(componentId);
+
+	Logger::Log("Component id = " + std::to_string(componentId) + " was added to entity id " + std::to_string(entityId));
 }
 
 template <typename TComponent>
