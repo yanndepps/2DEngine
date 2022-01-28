@@ -54,6 +54,22 @@ class Entity
 	bool operator!=(const Entity& other) const { return id != other.id; }
 	bool operator>(const Entity& other) const { return id > other.id; }
 	bool operator<(const Entity& other) const { return id < other.id; }
+
+	template <typename TComponent, typename... TArgs>
+	void AddComponent(TArgs&&... args);
+
+	template <typename TComponent>
+	void RemoveComponent();
+
+	template <typename TComponent>
+	bool HasComponent() const;
+
+	template <typename TComponent>
+	TComponent& GetComponent() const;
+
+	// Hold a pointer to the entity's owner registry
+	// use forward declaration
+	class Registry* registry;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -165,6 +181,9 @@ class Registry
 	template <typename TComponent>
 	bool HasComponent(Entity entity) const;
 
+	template <typename TComponent>
+	TComponent& GetComponent(Entity entity) const;
+
 	// System management
 	template <typename TSystem, typename... TArgs>
 	void AddSystem(TArgs&&... args);
@@ -260,6 +279,40 @@ bool Registry::HasComponent(Entity entity) const
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	return entityComponentSignatures[entityId].test(componentId);
+}
+
+template <typename TComponent>
+TComponent& Registry::GetComponent(Entity entity) const
+{
+	const auto componentId = Component<TComponent>::GetId();
+	const auto entityId = entity.GetId();
+	auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+	return componentPool->Get(entityId);
+}
+
+// ---
+template <typename TComponent, typename... TArgs>
+void Entity::AddComponent(TArgs&&... args)
+{
+	// TODO:
+}
+
+template <typename TComponent>
+void Entity::RemoveComponent()
+{
+	// TODO:
+}
+
+template <typename TComponent>
+bool Entity::HasComponent() const
+{
+	// TODO:
+}
+
+template <typename TComponent>
+TComponent& Entity::GetComponent() const
+{
+	// TODO:
 }
 
 #endif
