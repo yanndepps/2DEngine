@@ -97,12 +97,11 @@ void Game::Update()
 	// store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// Ask all the systems to update
-	registry->GetSystem<MovementSystem>().Update();
-	// TODO: registry->GetSystem<CollisionSystem>().Update();
-
 	// Update the registry to process the entities that are waiting to be created/deleted
 	registry->Update();
+
+	// Ask all the systems to update
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
 }
 
 void Game::Render()
