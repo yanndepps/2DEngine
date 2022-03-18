@@ -4,6 +4,7 @@
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
+#include "../Systems/MovementSystem.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
@@ -65,6 +66,9 @@ void Game::ProcessInput()
 
 void Game::Setup()
 {
+	// Add the systems that need to be processed in our game
+	registry->AddSystem<MovementSystem>();
+
 	// Create an entity
 	Entity tank = registry->CreateEntity();
 
@@ -73,7 +77,7 @@ void Game::Setup()
 	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 50.0));
 
 	// Remove a component from the entity
-	tank.RemoveComponent<TransformComponent>();
+	// tank.RemoveComponent<TransformComponent>();
 }
 
 void Game::Update()
@@ -93,10 +97,12 @@ void Game::Update()
 	// store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// TODO:
-	// MovementSystem.Update();
-	// CollisionSystem.Update();
-	// DamageSystem.Update();
+	// Ask all the systems to update
+	registry->GetSystem<MovementSystem>().Update();
+	// TODO: registry->GetSystem<CollisionSystem>().Update();
+
+	// Update the registry to process the entities that are waiting to be created/deleted
+	registry->Update();
 }
 
 void Game::Render()
