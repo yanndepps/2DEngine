@@ -9,12 +9,18 @@ AssetStore::AssetStore()
 
 AssetStore::~AssetStore()
 {
+	ClearAssets();
 	Logger::Log("AssetStore destructor called!");
 }
 
 void AssetStore::ClearAssets()
 {
-	// TODO:
+	// deallocate from memory
+	for (auto texture : textures) {
+		SDL_DestroyTexture(texture.second);
+	}
+	// clear the map
+	textures.clear();
 }
 
 void AssetStore::AddTexture(SDL_Renderer* renderer, const std::string& assetId, const std::string& filePath)
@@ -22,10 +28,14 @@ void AssetStore::AddTexture(SDL_Renderer* renderer, const std::string& assetId, 
 	SDL_Surface* surface = IMG_Load(filePath.c_str());
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
+
 	// Add the texture to the map
+	textures.emplace(assetId, texture);
+
+	Logger::Log("New texture added to the Asset Store with the id = " + assetId);
 }
 
-SDL_Texture* AssetStore::GetTexture(const std::string& assetId) const
+SDL_Texture* AssetStore::GetTexture(const std::string& assetId)
 {
-	// TODO:
+	return textures[assetId];
 }
