@@ -3,6 +3,7 @@
 
 #include "../AssetStore/AssetStore.h"
 #include "../ECS/ECS.h"
+#include "../EventBus/EventBus.h"
 #include <SDL2/SDL.h>
 
 const int FPS = 60;

@@ -2,12 +2,12 @@
 #define EVENTBUS_H
 
 #include "../Logger/Logger.h"
+#include "Event.h"
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
-#include <functional>
 #include <typeindex>
-#include "Event.h"
 
 class IEventCallback
 {
@@ -37,7 +37,8 @@ private:
   }
 
 public:
-  EventCallback(TOwner* ownerInstance, CallbackFunction callbackFunction) {
+  EventCallback(TOwner* ownerInstance, CallbackFunction callbackFunction)
+  {
     this->ownerInstance = ownerInstance;
     this->callbackFunction = callbackFunction;
   }
@@ -50,7 +51,7 @@ typedef std::list<std::unique_ptr<IEventCallback>> HandlerList;
 class EventBus
 {
 private:
-      std::map<std::type_index, std::unique_ptr<HandlerList>> subscribers;
+  std::map<std::type_index, std::unique_ptr<HandlerList>> subscribers;
 
 public:
   EventBus()
@@ -61,6 +62,12 @@ public:
   ~EventBus()
   {
     Logger::Log("EventBus destructor called!");
+  }
+
+  // Clears the subscribers list
+  void Reset()
+  {
+    subscribers.clear();
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -86,15 +93,15 @@ public:
   // Example: eventBus-> EmitEvent<CollisionEvent>(player, entity);
   //////////////////////////////////////////////////////////////////////////
 
-  template <typename TEvent, typename ...TArgs>
-  void EmitEvent(TArgs&& ...args)
+  template <typename TEvent, typename... TArgs>
+  void EmitEvent(TArgs&&... args)
   {
     auto handlers = subscribers[typeid(TEvent)].get();
     if (handlers) {
       for (auto it = handlers->begin(); it != handlers->end(); it++) {
-        auto handler = it->get();
-        TEvent event(std::forward<TArgs>(args)...);
-        handler->Execute(event);
+	auto handler = it->get();
+	TEvent event(std::forward<TArgs>(args)...);
+	handler->Execute(event);
       }
     }
   }
