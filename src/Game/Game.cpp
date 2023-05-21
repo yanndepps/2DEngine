@@ -10,6 +10,7 @@
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/DamageSystem.h"
+#include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
@@ -74,6 +75,7 @@ void Game::ProcessInput()
       if (sdlEvent.key.keysym.sym == SDLK_d) {
 	isDebug = !isDebug;
       }
+      eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
       break;
     }
   }
@@ -88,6 +90,7 @@ void Game::LoadLevel(int level)
   registry->AddSystem<CollisionSystem>();
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<DamageSystem>();
+  registry->AddSystem<KeyboardControlSystem>();
 
   // Adding assets to the asset store
   assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -174,6 +177,7 @@ void Game::Update()
 
   // Perform the subscription of the events for all systems
   registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
+  registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
 
   // Update the registry to process the entities that are waiting to be created/deleted
   registry->Update();
