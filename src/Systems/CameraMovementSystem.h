@@ -22,9 +22,9 @@ public:
 
       // change camera.x & camera.y based on the entity transform position
       if (transform.position.x + (camera.w / 2) < Game::mapWidth) {
-	camera.x = transform.position.x - (Gamm::windowWidth / 2);
+	camera.x = transform.position.x - (Game::windowWidth / 2);
       }
-      if (transform.position.y + (camera.y / 2) < Game::mapHeight) {
+      if (transform.position.y + (camera.h / 2) < Game::mapHeight) {
 	camera.y = transform.position.y - (Game::windowHeight / 2);
       }
 
