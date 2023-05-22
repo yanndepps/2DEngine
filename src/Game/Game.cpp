@@ -2,6 +2,7 @@
 #include "../../libs/glm/glm.hpp"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/CameraFollowComponent.h"
 #include "../Components/KeyboardControlledComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
@@ -9,6 +10,7 @@
 #include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Systems/CameraMovementSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
@@ -58,6 +60,14 @@ void Game::Initialize()
   }
   // set the video mode to be real fullscreen
   SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
+  // Init the camera view with the entire screen area
+  camera.x = 0;
+  camera.y = 0;
+  camera.w = windowWidth;
+  camera.h = windowHeight;
+
+  // ---
   isRunning = true;
 }
 
@@ -92,6 +102,7 @@ void Game::LoadLevel(int level)
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<DamageSystem>();
   registry->AddSystem<KeyboardControlSystem>();
+  registry->AddSystem<CameraMovementSystem>();
 
   // Adding assets to the asset store
   assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -131,7 +142,8 @@ void Game::LoadLevel(int level)
   chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
   chopper.AddComponent<AnimationComponent>(2, 15, true);
-  chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -50), glm::vec2(50, 0), glm::vec2(0, 50), glm::vec2(-50, 0));
+  chopper.AddComponent<KeyboardControlledComponent>(glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80), glm::vec2(-80, 0));
+  chopper.AddComponent<CameraFollowComponent>();
 
   Entity radar = registry->CreateEntity();
   radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 74.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
@@ -188,6 +200,7 @@ void Game::Update()
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
   registry->GetSystem<CollisionSystem>().Update(eventBus);
+  registry->GetSystem<CameraMovementSystem>().Update(camera);
 }
 
 void Game::Render()
