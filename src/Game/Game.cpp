@@ -22,6 +22,11 @@
 #include <fstream>
 #include <iostream>
 
+int Game::windowWidth;
+int Game::windowHeight;
+int Game::mapWidth;
+int Game::mapHeight;
+
 Game::Game()
 {
   isRunning = false;
@@ -135,6 +140,8 @@ void Game::LoadLevel(int level)
     }
   }
   mapFile.close();
+  mapWidth = mapNumCols * tileSize * tileScale;
+  mapHeight = mapNumRows * tileSize * tileScale;
 
   // Create entities & add components
   Entity chopper = registry->CreateEntity();
@@ -209,7 +216,7 @@ void Game::Render()
   SDL_RenderClear(renderer);
 
   // Invoke all the systems that need to render
-  registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+  registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
   if (isDebug) {
     registry->GetSystem<RenderColliderSystem>().Update(renderer);
   }
