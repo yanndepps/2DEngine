@@ -22,8 +22,9 @@ public:
   void onCollision(CollisionEvent& event)
   {
     Logger::Log("The Damage system received an event collision between entities " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
-    event.a.Kill();
-    event.b.Kill();
+    // TODO: bypass for debug only
+    // event.a.Kill();
+    // event.b.Kill();
   }
 
   void Update()

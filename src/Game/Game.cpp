@@ -118,6 +118,7 @@ void Game::LoadLevel(int level)
   assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
   assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
   assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
+  assetStore->AddTexture(renderer, "bullet-image", "./assets/images/bullet.png");
 
   // Load the tilemap
   int tileSize = 32;
@@ -166,14 +167,14 @@ void Game::LoadLevel(int level)
   tank.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
   tank.AddComponent<BoxColliderComponent>(32, 32);
-  tank.AddComponent<ProjectileEmitterComponent>();
+  tank.AddComponent<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 5000, 10000, 0, false);
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
   truck.AddComponent<BoxColliderComponent>(32, 32);
-  truck.AddComponent<ProjectileEmitterComponent>();
+  truck.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 2000, 10000, 0, false);
 }
 
 void Game::Setup()
@@ -211,7 +212,7 @@ void Game::Update()
   // Invoke all the systems that need to update
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
-  registry->GetSystem<ProjectileEmitSystem>().Update();
+  registry->GetSystem<ProjectileEmitSystem>().Update(registry);
   registry->GetSystem<CollisionSystem>().Update(eventBus);
   registry->GetSystem<CameraMovementSystem>().Update(camera);
 }
