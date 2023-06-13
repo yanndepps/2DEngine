@@ -4,6 +4,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/CameraFollowComponent.h"
 #include "../Components/KeyboardControlledComponent.h"
+#include "../Components/ProjectileEmitterComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
@@ -15,6 +16,7 @@
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/ProjectileEmitSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
 #include <SDL2/SDL.h>
@@ -108,6 +110,7 @@ void Game::LoadLevel(int level)
   registry->AddSystem<DamageSystem>();
   registry->AddSystem<KeyboardControlSystem>();
   registry->AddSystem<CameraMovementSystem>();
+  registry->AddSystem<ProjectileEmitSystem>();
 
   // Adding assets to the asset store
   assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
@@ -160,15 +163,17 @@ void Game::LoadLevel(int level)
 
   Entity tank = registry->CreateEntity();
   tank.AddComponent<TransformComponent>(glm::vec2(500.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
-  tank.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, 0.0));
+  tank.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
   tank.AddComponent<BoxColliderComponent>(32, 32);
+  tank.AddComponent<ProjectileEmitterComponent>();
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
-  truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
+  truck.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
   truck.AddComponent<BoxColliderComponent>(32, 32);
+  truck.AddComponent<ProjectileEmitterComponent>();
 }
 
 void Game::Setup()
@@ -206,6 +211,7 @@ void Game::Update()
   // Invoke all the systems that need to update
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
+  registry->GetSystem<ProjectileEmitSystem>().Update();
   registry->GetSystem<CollisionSystem>().Update(eventBus);
   registry->GetSystem<CameraMovementSystem>().Update(camera);
 }
